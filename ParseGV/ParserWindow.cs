@@ -26,9 +26,22 @@ namespace ParseGV
         private void button1_Click(object sender, EventArgs e)
         {
 
+            try
+            {
+                ParseData();
+            }
+            catch (Exception err)
+            {
+
+                MessageBox.Show(err.Message);
+            }
+        }
+
+        private void ParseData()
+        {
             OpenFileDialog open = new OpenFileDialog();
             open.Filter = "Zip File | *.zip";
-           
+
             open.ShowDialog();
 
             if (open.FileName == "")
@@ -51,13 +64,13 @@ namespace ParseGV
 
             file.ExtractAll(random_path);
 
-            var dirs  = Directory.GetDirectories(random_path);
-            
+            var dirs = Directory.GetDirectories(random_path);
+
             //This is where files are. They are a bunch of html files with Text in them
             string path_of_data = dirs[0] + @"\Voice\Calls\";
-            
+
             var files = Directory.GetFiles(path_of_data);
-            List<string> files_filtered = (from x in files where x.Contains("Text") select x).ToList(); 
+            List<string> files_filtered = (from x in files where x.Contains("Text") select x).ToList();
             var browser = new WebBrowser();
             //This for to wait for document to complete before handling
             browser.DocumentCompleted += browser_DocumentCompleted;
@@ -68,8 +81,9 @@ namespace ParseGV
                 browser.DocumentText = text;
                 wait = true;
                 var doc = browser.Document;
-                
-                while (wait) {
+
+                while (wait)
+                {
                     Application.DoEvents();
                 }
                 ParseData(browser);
@@ -103,6 +117,19 @@ namespace ParseGV
 
         private void button2_Click(object sender, EventArgs e)
         {
+            try
+            {
+                WriteCSV();
+            }
+            catch (Exception err)
+            {
+
+                MessageBox.Show(err.Message);
+            }
+        }
+
+        private void WriteCSV()
+        {
             SaveFileDialog save = new SaveFileDialog();
             save.Filter = "CSV | *.csv";
             save.ShowDialog();
@@ -118,7 +145,7 @@ namespace ParseGV
                 csv.WriteField("Person");
                 csv.WriteField("Message");
                 csv.NextRecord();
-                
+
                 foreach (var item in messages)
                 {
                     csv.WriteField(item.Item1);
